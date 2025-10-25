@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -76,12 +77,57 @@ class MainActivity : AppCompatActivity() {
         )
         listViewNotes.adapter = notesAdapter
 
-        // Set click listener for viewing notes
+        // Set CLICK listener for EDITING notes
         listViewNotes.setOnItemClickListener { _, _, position, _ ->
             if (position < notesList.size) {
                 val note = notesList[position]
-                showNoteDetails(note)
+                editNote(note)
             }
+        }
+
+        // Set LONG-CLICK listener for DELETING notes
+        listViewNotes.setOnItemLongClickListener { _, _, position, _ ->
+            if (position < notesList.size) {
+                val note = notesList[position]
+                showDeleteConfirmation(note)
+            }
+            true // Return true to indicate we've handled the long click
+        }
+    }
+
+    /**
+     * Open note for editing
+     */
+    private fun editNote(note: Note) {
+        val intent = Intent(this, AddNoteActivity::class.java)
+        intent.putExtra("note", note)
+        startActivity(intent)
+    }
+
+    /**
+     * Show delete confirmation dialog
+     */
+    private fun showDeleteConfirmation(note: Note) {
+        AlertDialog.Builder(this)
+            .setTitle("Delete Note")
+            .setMessage("Are you sure you want to delete \"${note.title}\"?")
+            .setPositiveButton("Delete") { _, _ ->
+                deleteNote(note)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    /**
+     * Delete a single note
+     */
+    private fun deleteNote(note: Note) {
+        val deleted = StorageManager.getStorage().deleteNote(note.id)
+        if (deleted) {
+            Toast.makeText(this, "Note deleted", Toast.LENGTH_SHORT).show()
+            loadNotes() // Reload the list
+        } else {
+            Toast.makeText(this, "Error deleting note", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -114,12 +160,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Show note details in a Toast (or you could create a detail activity)
+     * Show note details in a Toast (REMOVED - now we edit instead)
      */
-    private fun showNoteDetails(note: Note) {
-        val message = "${note.title}\n\n${note.content}"
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-    }
+    // This method is no longer needed since clicking now opens edit mode
 
     /**
      * Update storage type display
@@ -149,7 +192,7 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.action_delete_note -> {
-                // Launch DeleteNoteActivity
+                // Launch DeleteNoteActivity (for bulk deletion)
                 if (notesList.isEmpty()) {
                     Toast.makeText(
                         this,

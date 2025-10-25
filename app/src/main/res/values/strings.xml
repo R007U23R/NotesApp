@@ -7,6 +7,7 @@
     <string name="menu_delete_note">Delete Note</string>
     <string name="menu_switch_storage">Switch Storage</string>
     <string name="empty_notes">No notes yet. Add your first note!</string>
+    <string name="hint_tap_edit">Tap to edit • Long press to delete</string>
 
     <!-- Add Note Activity -->
     <string name="add_note_title">Add New Note</string>

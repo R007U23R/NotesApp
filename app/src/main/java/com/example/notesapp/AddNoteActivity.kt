@@ -14,16 +14,23 @@ class AddNoteActivity : AppCompatActivity() {
     private lateinit var btnSave: Button
     private lateinit var btnCancel: Button
 
+    // Track if we're editing an existing note
+    private var isEditMode = false
+    private var editingNoteId: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_note)
 
-        // Set activity title
-        supportActionBar?.title = getString(R.string.add_note_title)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
         // Initialize views
         initializeViews()
+
+        // Check if we're editing an existing note
+        checkForEditMode()
+
+        // Set activity title based on mode
+        supportActionBar?.title = if (isEditMode) "Edit Note" else getString(R.string.add_note_title)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Set up button listeners
         setupButtonListeners()
@@ -37,6 +44,20 @@ class AddNoteActivity : AppCompatActivity() {
         editTextNoteContent = findViewById(R.id.editTextNoteContent)
         btnSave = findViewById(R.id.btnSave)
         btnCancel = findViewById(R.id.btnCancel)
+    }
+
+    /**
+     * Check if we're in edit mode and populate fields if so
+     */
+    private fun checkForEditMode() {
+        val note = intent.getSerializableExtra("note") as? Note
+        if (note != null) {
+            isEditMode = true
+            editingNoteId = note.id
+            editTextNoteTitle.setText(note.title)
+            editTextNoteContent.setText(note.content)
+            btnSave.text = "Update Note"
+        }
     }
 
     /**
@@ -84,28 +105,48 @@ class AddNoteActivity : AppCompatActivity() {
             return
         }
 
-        // Create new note
-        val note = Note(
-            title = noteTitle,
-            content = noteContent
-        )
+        val storage = StorageManager.getStorage()
 
-        // Save to current storage
-        val saved = StorageManager.getStorage().saveNote(note)
+        if (isEditMode && editingNoteId != null) {
+            // Delete old note and save updated version
+            storage.deleteNote(editingNoteId!!)
+            val updatedNote = Note(
+                id = editingNoteId!!,
+                title = noteTitle,
+                content = noteContent
+            )
+            val saved = storage.saveNote(updatedNote)
 
-        if (saved) {
-            Toast.makeText(
-                this,
-                getString(R.string.note_saved),
-                Toast.LENGTH_SHORT
-            ).show()
-            finish()
+            if (saved) {
+                Toast.makeText(this, "Note updated successfully!", Toast.LENGTH_SHORT).show()
+                finish()
+            } else {
+                Toast.makeText(this, "Error updating note", Toast.LENGTH_SHORT).show()
+            }
         } else {
-            Toast.makeText(
-                this,
-                "Error saving note. Please try again.",
-                Toast.LENGTH_SHORT
-            ).show()
+            // Create new note
+            val note = Note(
+                title = noteTitle,
+                content = noteContent
+            )
+
+            // Save to current storage
+            val saved = storage.saveNote(note)
+
+            if (saved) {
+                Toast.makeText(
+                    this,
+                    getString(R.string.note_saved),
+                    Toast.LENGTH_SHORT
+                ).show()
+                finish()
+            } else {
+                Toast.makeText(
+                    this,
+                    "Error saving note. Please try again.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
