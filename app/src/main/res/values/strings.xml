@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">Notes App</string>
+
+    <!-- Main Activity -->
+    <string name="main_title">My Notes</string>
+    <string name="menu_add_note">Add Note</string>
+    <string name="menu_delete_note">Delete Note</string>
+    <string name="menu_switch_storage">Switch Storage</string>
+    <string name="empty_notes">No notes yet. Add your first note!</string>
+
+    <!-- Add Note Activity -->
+    <string name="add_note_title">Add New Note</string>
+    <string name="note_name_hint">Note Title</string>
+    <string name="note_content_hint">Note Content</string>
+    <string name="button_save">Save Note</string>
+    <string name="button_cancel">Cancel</string>
+
+    <!-- Delete Note Activity -->
+    <string name="delete_note_title">Delete Note</string>
+    <string name="button_delete">Delete Selected</string>
+    <string name="select_note_to_delete">Select a note to delete</string>
+    <string name="no_notes_to_delete">No notes available to delete</string>
+
+    <!-- Validation Messages -->
+    <string name="error_empty_title">Note title cannot be empty!</string>
+    <string name="error_empty_content">Note content cannot be empty!</string>
+    <string name="error_no_selection">Please select a note to delete!</string>
+
+    <!-- Success Messages -->
+    <string name="note_saved">Note saved successfully!</string>
+    <string name="note_deleted">Note deleted successfully!</string>
+    <string name="storage_switched">Storage switched to %1$s</string>
+
+    <!-- Storage Types -->
+    <string name="storage_shared_prefs">SharedPreferences</string>
+    <string name="storage_json_file">JSON File</string>
+    <string name="current_storage">Current Storage: %1$s</string>
+</resources>
